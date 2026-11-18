@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="NVQLS: a hybrid quantum-classical framework for unsupervised PDE solving via spectral operator learning (NeurIPS 2026).">
+  <meta name="keywords" content="NVQLS, operator learning, variational quantum linear solver, VQLS, spectral method, PDE, NeurIPS 2026">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neural Quantum Spectral Operator Learning for Solving Partial Differential Equations</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Noto+Sans:400,600,700|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <!-- MathJax for equations -->
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; }
+    .publication-title { font-family: 'Castoro', serif; }
+    .publication-venue { color: #555; font-weight: 600; margin-top: 0.5rem; }
+    .publication-authors { font-family: 'Noto Sans', sans-serif; }
+    .publication-authors .author-block { display: inline-block; margin-right: 0.15rem; }
+    .publication-affiliations { font-size: 0.95rem; color: #555; }
+    .publication-affiliations .author-block { display: inline-block; margin: 0 0.4rem; }
+    .publication-contact { font-size: 0.85rem; color: #777; margin-top: 0.4rem; }
+    .publication-links { margin-top: 1.2rem; }
+    .link-block a { margin: 0.3rem 0.15rem; }
+    .button.is-static-disabled { opacity: 0.55; pointer-events: none; }
+    .tldr { font-size: 1.15rem; margin-top: 1.2rem; }
+    .teaser .hero-body { padding-top: 0; padding-bottom: 2rem; }
+    figure.paper-figure { margin: 1.5rem 0; }
+    figure.paper-figure img { width: 100%; height: auto; display: block; margin: 0 auto; }
+    figure.paper-figure figcaption { font-size: 0.92rem; color: #555; margin-top: 0.6rem; text-align: left; }
+    .result-table { margin: 1rem auto 0.4rem auto; font-size: 0.95rem; }
+    .result-table th, .result-table td { text-align: center !important; vertical-align: middle !important; }
+    .result-table td:first-child, .result-table th:first-child { text-align: left !important; }
+    .table-caption { font-size: 0.92rem; color: #555; margin-bottom: 1.5rem; }
+    .table-container { margin-bottom: 0; }
+    .note-box { background: #f5f7f9; border-radius: 6px; padding: 1rem 1.25rem; }
+    pre { white-space: pre-wrap; }
+    .footer { padding: 2rem 1.5rem 3rem; }
+  </style>
+</head>
+<body>
+
+<!-- Title -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-2 publication-title">Neural Quantum Spectral Operator Learning<br>for Solving Partial Differential Equations</h1>
+          <p class="publication-venue">NeurIPS 2026 &middot; Poster</p>
+
+          <div class="is-size-5 publication-authors" style="margin-top: 1rem;">
+            <span class="author-block">Chanyoung Kim<sup>1</sup>,</span>
+            <span class="author-block">Myeonghwan Seong<sup>2</sup>,</span>
+            <span class="author-block">Yujin Kim<sup>2</sup>,</span>
+            <span class="author-block">Daniel K. Park<sup>2,3,4,&dagger;</sup>,</span>
+            <span class="author-block">Youngjoon Hong<sup>5,&dagger;</sup></span>
+          </div>
+
+          <div class="publication-affiliations" style="margin-top: 0.6rem;">
+            <span class="author-block"><sup>1</sup>Interdisciplinary Program in Artificial Intelligence, Seoul National University</span>
+            <span class="author-block"><sup>2</sup>Department of Statistics and Data Science, Yonsei University</span>
+            <span class="author-block"><sup>3</sup>Department of Applied Statistics, Yonsei University</span>
+            <span class="author-block"><sup>4</sup>Department of Quantum Information, Yonsei University</span>
+            <span class="author-block"><sup>5</sup>Department of Mathematical Sciences, Seoul National University</span>
+          </div>
+          <div class="publication-contact">
+            <sup>&dagger;</sup>Corresponding authors &middot;
+            chanyoung.kim@snu.ac.kr, {europa0306, k.yujin2228, dkd.park}@yonsei.ac.kr, hongyj@snu.ac.kr
+          </div>
+
+          <div class="publication-links">
+            <!-- Paper PDF -->
+            <span class="link-block">
+              <a href="https://openreview.net/pdf?id=U8esdofq2w"
+                 class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                <span>Paper</span>
+              </a>
+            </span>
+            <!-- OpenReview -->
+            <span class="link-block">
+              <a href="https://openreview.net/forum?id=U8esdofq2w"
+                 class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fas fa-comments"></i></span>
+                <span>OpenReview</span>
+              </a>
+            </span>
+            <!-- NeurIPS poster page -->
+            <span class="link-block">
+              <a href="https://neurips.cc/virtual/2026/loc/sydney/poster/152295"
+                 class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fas fa-chalkboard-user"></i></span>
+                <span>NeurIPS Poster</span>
+              </a>
+            </span>
+            <!-- Code: replace href and remove is-static-disabled when the code is released -->
+            <span class="link-block">
+              <a href="#" class="external-link button is-normal is-rounded is-dark is-static-disabled"
+                 aria-disabled="true">
+                <span class="icon"><i class="fab fa-github"></i></span>
+                <span>Code (coming soon)</span>
+              </a>
+            </span>
+          </div>
+
+          <p class="tldr"><strong>TL;DR:</strong> A hybrid quantum&ndash;classical framework for unsupervised PDE solving via spectral operator learning.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Teaser: overview figure -->
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <figure class="paper-figure">
+        <img src="./static/images/overview.png" alt="Overview of the NVQLS training procedure.">
+        <figcaption>
+          <strong>Overview of NVQLS.</strong> An angle network encodes a batch of PDE instances into quantum circuit
+          parameters $\theta$, while a loss function based on quantum state overlap minimizes weak-form residuals.
+          Each component of the loss is evaluated through quantum subroutines with measurement grouping.
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- Abstract -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Partial differential equations (PDEs) are central to modeling physical and engineering systems, but
+            repeatedly solving parametric PDEs remains computationally expensive. Operator learning enables fast
+            surrogate inference, yet typically requires large input&ndash;output paired datasets generated by costly
+            high-fidelity PDE solvers. Unsupervised operator learning frameworks alleviate data dependency but remain
+            hindered by computational bottlenecks. To address this limitation, we propose the Neural Variational
+            Quantum Linear Solver (NVQLS), the first hybrid quantum&ndash;classical operator learning framework
+            leveraging the Legendre&ndash;Galerkin weak formulation. We first resolve the sign ambiguity in VQLS energy
+            minimization, preventing erroneous solution representations. Furthermore, we introduce a neural embedding,
+            a novel encoding scheme that maps varying forcings and PDE coefficients into parameterized quantum circuit
+            representations. These structural innovations improve per-iteration computational cost and memory scaling
+            under suitable assumptions, while achieving superior accuracy compared to classical baselines. Validations
+            on 1D, 2D and 3D parametric PDEs under diverse boundary conditions demonstrate NVQLS&rsquo;s capability to
+            simultaneously process varying inputs, offering a scalable unsupervised approach to quantum-enhanced
+            operator learning.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Method -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Method</h2>
+
+    <h3 class="title is-4">Phase-aware overlap cost</h3>
+    <div class="content has-text-justified">
+      <p>
+        With a Legendre&ndash;Galerkin weak formulation, a PDE reduces to a linear system $A\alpha = F$ for the
+        spectral coefficients $\alpha$ of its solution. The standard VQLS objective determines the solution state only
+        up to a global phase, which can produce sign-flipped (reflected) PDE solutions. NVQLS instead uses the real
+        part of the quantum state overlap:
+      </p>
+      <p>
+        $$\mathcal{L}_{\mathrm{NVQLS}}(w)=\frac{1}{D}\sum_{i=1}^{D}\left(1-\frac{\mathrm{Re}\left(\sum_{l=1}^{L} c_{l}\,\langle F^{(i)}|A_{l}|\hat{\alpha}(f^{(i)};w)\rangle\right)}{\sqrt{\sum_{l=1}^{R} d_{l}\,\langle\hat{\alpha}(f^{(i)};w)|A_{l}|\hat{\alpha}(f^{(i)};w)\rangle}}\right),$$
+      </p>
+      <p>
+        where $A=\sum_{l} c_l A_l$ and $A^\dagger A=\sum_{l} d_l A_l$ are Pauli decompositions. The Pauli operators
+        appear as observables measured at the end of the circuit, so commuting Pauli strings can be grouped and
+        measured together.
+      </p>
+    </div>
+    <figure class="paper-figure">
+      <img src="./static/images/sign_correction.png" alt="Reflection errors of standard VQLS and their phase correction.">
+      <figcaption>
+        Reflection errors of standard VQLS and the effect of phase correction. (a&ndash;c) VQLS predictions with
+        reflection errors along the $x$-axis, the $y$-axis, and both axes; (d&ndash;f) the corresponding solutions
+        after phase correction.
+      </figcaption>
+    </figure>
+
+    <h3 class="title is-4" style="margin-top: 2.5rem;">Neural embedding for multiple instances</h3>
+    <div class="content has-text-justified">
+      <p>
+        VQLS must be re-optimized for every new PDE instance. NVQLS introduces a classical angle network $g$ that maps
+        each PDE input (forcing functions and coefficients) to circuit parameters,
+        $|\hat{\alpha}\rangle = V\!\left(g(f^{(i)};w)\right)|0\rangle$, so a single model learns the solution operator
+        across instances. The network output has dimension $\mathcal{O}(n^2)=\mathcal{O}((\log N^d)^2)$ for $n$ qubits.
+      </p>
+    </div>
+    <figure class="paper-figure">
+      <img src="./static/images/neural_embedding_ablation.png" alt="Ablation study on neural embedding.">
+      <figcaption>
+        Ablation on neural embedding (NE). NVQLS with NE (7,780 parameters, depth 10, $D=50$) is compared with
+        sequential and data re-uploading (DRU) embeddings (about 1,200 parameters, depth 100,
+        $D\in\{20,50,100\}$), where $D$ is the number of training instances. Neural embedding enables multi-instance
+        learning with a much shallower circuit.
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- Complexity -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Conditional Complexity</h2>
+    <div class="table-container">
+      <table class="table is-narrow is-fullwidth result-table">
+        <thead>
+          <tr><th>Model</th><th>Per-step computational cost</th><th>Classical working memory</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>NVQLS</strong></td>
+            <td>$\mathcal{O}\!\left(DN^d(\log_2 N^d)^4/\epsilon^2+DN^d(\log_2 N^d)^2\right)$</td>
+            <td>$\mathcal{O}\!\left(N^d(\log_2 N^d)^2\right)$</td>
+          </tr>
+          <tr>
+            <td>VQLS</td>
+            <td>$\mathcal{O}\!\left(DN^{2d}(\log_2 N^d)^5/\epsilon^2\right)$</td>
+            <td>$\mathcal{O}\!\left((\log_2 N^d)^2\right)$</td>
+          </tr>
+          <tr>
+            <td>SCLON / PI-DON</td>
+            <td>$\mathcal{O}\!\left(DN^{2d}\right)$</td>
+            <td>$\mathcal{O}\!\left(N^{2d}\right)$</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-caption">
+      Conditional per-step cost for $D$ PDE instances and peak classical working memory. $N$ is the number of basis
+      functions per dimension, $d$ the dimension, and $\epsilon$ the error tolerance.
+    </p>
+    <div class="content has-text-justified">
+      <p>
+        The estimates rely on three scaling assumptions: an ansatz whose depth grows linearly with $n$ and that uses
+        $\mathcal{O}(n^2)$ gate parameters is sufficiently expressive; forcing vectors can be prepared with a shallow
+        embedding circuit of depth $\mathcal{O}(\log_2 N^d)$; and $\mathcal{O}(N^d\log_2 N^d)$ grouped measurement
+        settings suffice per loss evaluation. These are supported by observations for the PDEs studied here, but are
+        not guaranteed for general PDEs. The estimates are a methodological result and do not constitute evidence of
+        quantum advantage.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Results -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Results</h2>
+
+    <h3 class="title is-4">Comparison with SCLON on 1D PDEs</h3>
+    <div class="table-container">
+      <table class="table is-narrow is-fullwidth result-table">
+        <thead>
+          <tr>
+            <th rowspan="2">Model</th>
+            <th colspan="2">RD ($\epsilon=0.1$)</th>
+            <th colspan="2">Helmholtz ($k^2=4.7$)</th>
+            <th colspan="2">CD ($\epsilon=0.1$)</th>
+          </tr>
+          <tr>
+            <th>Rel. $L_2$</th><th>Rel. $L_\infty$</th>
+            <th>Rel. $L_2$</th><th>Rel. $L_\infty$</th>
+            <th>Rel. $L_2$</th><th>Rel. $L_\infty$</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>NVQLS (Ours)</strong></td>
+            <td><strong>1.9e-4</strong></td><td><strong>2.0e-4</strong></td>
+            <td><strong>2.5e-3</strong></td><td><strong>2.5e-3</strong></td>
+            <td><strong>1.0e-3</strong></td><td><strong>1.1e-3</strong></td>
+          </tr>
+          <tr>
+            <td>SCLON</td>
+            <td>4.8e-3</td><td>5.5e-3</td>
+            <td>7.3e-3</td><td>7.6e-3</td>
+            <td>1.3e-3</td><td>1.4e-3</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-caption">
+      Reaction&ndash;diffusion (RD) and convection&ndash;diffusion (CD) equations under homogeneous Dirichlet boundary
+      conditions, and the Helmholtz equation under homogeneous Neumann boundary conditions. Each entry is the mean
+      error over 200 test samples.
+    </p>
+
+    <h3 class="title is-4">Comparison with PI-DON on the wave equation</h3>
+    <figure class="paper-figure">
+      <img src="./static/images/wave_pidon.png" alt="Wave equation results of NVQLS and PI-DON.">
+      <figcaption>
+        1D wave equation. Row 1: (a) ground truth, (b) PI-DON prediction, (c) NVQLS prediction, and (d) absolute error
+        of NVQLS. Row 2: (e&ndash;h) absolute errors of each model at $t=0.4, 0.8, 1.2$, and $1.6$. Across 200 test
+        samples, even the worst-case NVQLS prediction is more accurate than the PI-DON prediction.
+      </figcaption>
+    </figure>
+
+    <h3 class="title is-4" style="margin-top: 2.5rem;">Comparison with FNO under limited labeled data</h3>
+    <div class="table-container">
+      <table class="table is-narrow is-fullwidth result-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>NVQLS (Ours, $D=0$)</th>
+            <th>FNO ($D=50$)</th>
+            <th>FNO ($D=100$)</th>
+            <th>FNO ($D=200$)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Rel. $L_2$ error</td><td>2.26e-2</td><td>3.54e-2</td><td>2.14e-2</td><td><strong>1.30e-2</strong></td></tr>
+          <tr><td>Rel. $L_\infty$ error</td><td><strong>1.40e-2</strong></td><td>3.98e-2</td><td>2.30e-2</td><td>1.42e-2</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-caption">
+      Wave equation with homogeneous Dirichlet boundary conditions. $D$ is the number of paired input&ndash;solution
+      training data. All models are trained for 5,000 epochs, and the minimum test errors on 200 unseen samples are
+      reported. NVQLS uses no labeled solutions.
+    </p>
+
+    <h3 class="title is-4">Beyond 1D</h3>
+    <figure class="paper-figure">
+      <img src="./static/images/pdes_2d.png" alt="NVQLS results on two-dimensional PDEs.">
+      <figcaption>
+        Two-dimensional PDEs. Columns: forcing $f$, exact solution $u$, NVQLS prediction $\hat{u}$, and absolute error
+        $|\hat{u}-u|$. Rows: (a&ndash;d) reaction&ndash;diffusion ($\epsilon=0.1$, Dirichlet), (e&ndash;h) Helmholtz
+        ($k^2=8.9$, Neumann), and (i&ndash;l) convection&ndash;diffusion ($\epsilon=0.1$, Dirichlet).
+      </figcaption>
+    </figure>
+    <div class="content">
+      <ul>
+        <li><strong>2D PDEs:</strong> mean relative $L_2$ errors of $3.8\times10^{-3}$ (RD), $2.1\times10^{-2}$ (Helmholtz), and $6.6\times10^{-3}$ (CD); $3.0\times10^{-3}$ with jointly varying coefficient&ndash;forcing inputs.</li>
+        <li><strong>3D elliptic PDEs:</strong> mean relative $L_2$ errors of $1.0$&ndash;$1.7\times10^{-2}$.</li>
+        <li><strong>Discontinuous variable coefficients:</strong> $5.0\times10^{-4}$ for Darcy flow and $8.1\times10^{-3}$ for parabolic diffusion.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Limitations -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">Limitations</h2>
+    <div class="content has-text-justified note-box">
+      <p>
+        Our experiments are small-scale noiseless classical simulations, so they validate the framework and its
+        improved scaling under the stated assumptions rather than demonstrate a practical quantum advantage. In
+        hardware-inspired noisy training on the 1D Helmholtz equation, the test relative $L_2$ error rises from
+        $2.44\times10^{-3}$ (noiseless) to $2.68\times10^{-1}$ at device-informed error rates, and to
+        $2.79\times10^{-2}$ at substantially reduced rates. Reducing circuit depth and error accumulation is an
+        important direction for running NVQLS on quantum hardware.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- BibTeX -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@inproceedings{kim2026neural,
+  title     = {Neural Quantum Spectral Operator Learning for Solving Partial Differential Equations},
+  author    = {Kim, Chanyoung and Seong, Myeonghwan and Kim, Yujin and Park, Daniel K. and Hong, Youngjoon},
+  booktitle = {Advances in Neural Information Processing Systems},
+  year      = {2026}
+}</code></pre>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link" href="https://openreview.net/pdf?id=U8esdofq2w" aria-label="Paper PDF">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>
+            This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+            Website template borrowed from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
